@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:football_news/screens/login.dart';  // Add this import
+import 'package:pbp_django_auth/pbp_django_auth.dart';  // Add this import
+import 'package:provider/provider.dart';  // Add this import
+import 'package:football_news/screens/news_entry_list.dart';  // Ensure correct import
 
 class NewsCard extends StatelessWidget {
   final String title;
@@ -20,6 +24,7 @@ class NewsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();  // Add CookieRequest here
     final scheme = Theme.of(context).colorScheme;
 
     return Card(
@@ -28,7 +33,43 @@ class NewsCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
+        onTap: () async {
+          if (onTap != null) {
+            onTap!();
+          } else if (title == "See Football News") {
+            // Ensure this navigation works properly
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NewsEntryListPage(),
+              ),
+            );
+          } else if (title == "Logout") {
+            // Perform logout when the user taps on the logout option
+            final response = await request.logout(
+                "http://localhost:8000/auth/logout/"); 
+            String message = response["message"];
+            if (context.mounted) {
+              if (response['status']) {
+                String uname = response["username"];
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text("$message See you again, $uname."),
+                ));
+                // Navigate back to the login page after successful logout
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(message),
+                  ),
+                );
+              }
+            }
+          }
+        },
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
@@ -49,17 +90,17 @@ class NewsCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
 
-              // Teks
+              // Text content
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Kategori + featured
+                    // Category + featured
                     Row(
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: scheme.secondaryContainer,
                             borderRadius: BorderRadius.circular(8),
