@@ -57,9 +57,9 @@ jobs:
         run: echo "tag=v$(grep '^version:' pubspec.yaml | awk '{print $2}')-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
 
       - name: Release APK
-  uses: ncipollo/release-action@v1
-  with:
-    artifacts: build/app/outputs/flutter-apk/*.apk
-    tag: v${{ steps.tag.outputs.tag || 'manual' }}
-    allowUpdates: true
-    makeLatest: true
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: build/app/outputs/flutter-apk/*.apk
+          tag: v${{ steps.tag.outputs.tag || 'manual' }}
+          allowUpdates: true
+          makeLatest: true
