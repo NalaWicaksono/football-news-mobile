@@ -62,7 +62,7 @@ class _NewsEntryListPageState extends State<NewsEntryListPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => NewsDetailPage(
+                        builder: (_) => NewsDetailPage(
                           news: snapshot.data![index], // Kirim berita yang dipilih ke halaman detail
                         ),
                       ),
