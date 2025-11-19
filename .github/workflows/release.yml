@@ -57,11 +57,9 @@ jobs:
         run: echo "tag=v$(grep '^version:' pubspec.yaml | awk '{print $2}')-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
 
       - name: Release APK
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: build/app/outputs/flutter-apk/*.apk
-          allowUpdates: false
-          name: "Release - ${{ steps.date.outputs.date }}"
-          body: "Published at ${{ steps.date.outputs.date }}"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ steps.tag.outputs.tag }}
+  uses: ncipollo/release-action@v1
+  with:
+    artifacts: build/app/outputs/flutter-apk/*.apk
+    tag: v${{ steps.tag.outputs.tag || 'manual' }}
+    allowUpdates: true
+    makeLatest: true
